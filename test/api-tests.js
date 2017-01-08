@@ -80,7 +80,28 @@ describe('Blog Posts API resource', function() {
 	return closeServer();
     });
 
+    describe('GET /posts, to return all posts', function() {
+	let res;
+	return chai.request(app)
+	    .get('/posts')
+	    .then(function(_res) {
+		res = _res;
+		res.should.have.status(200);
+		res.body.should.have.length.of.at.least(1);
 
+		return BlogPosts.count();
+	    })
+	    .then(function(count){
+		res.body.BlogPosts.should.have.length(count);
+		    
+	    });
+    });
+
+    describe('POST /posts, to create a post inside the database', function() {
+
+
+
+    });
 });
 
 
