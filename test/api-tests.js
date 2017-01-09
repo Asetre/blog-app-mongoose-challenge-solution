@@ -114,12 +114,49 @@ describe('Blog Posts API resource', function() {
 
     });
 
-    describe('PUT endpoint' function() {
+    describe('PUT endpoint', function() {
+        it('should update an existing posts', function() {
+            const updatePost = {
+                title: 'New title',
+                content: 'New content',
+                author: {
+                    firstName:'New firstName',
+                    lastName: 'New lastName'
+
+                }
+
+            };
 
 
+            return BlogPost
+                .findOne()
+                .exec()
+                .then(function(post){
+                    updatePost.id = post.id;
 
+                    return chai.request(app)
+                        .put(`/posts/${post.id}`)
+                        .send(updatePost)
 
+                })
+                .then(function(res){
+                    res.should.have.status(201);
+                    res.should.be.json;
+                    res.should.be.a('object');
+                    res.body.title.should.equal(updatePost.title);
+                    res.body.content.should.equal(updatePost.content);
+                    res.body.author.should.equal(`${updatePost.author.firstName} ${updatePost.author.lastName}`);
+                    
+                    return BlogPost.findById(res.body.id).exec();
 
+                })
+                .then(function(post){
+                    post.title.should.equal(updatePost.title);
+                    post.content.should.equal(updatePost.content);
+                    post.author.firstName.should.equal(updatePost.author.firstName);
+                    post.author.lastName.should.equal(updatePost.author.lastName);
+                });
+        });
 
     });
 });
